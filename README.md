@@ -154,8 +154,9 @@ Sales trend from last 7 days : Comparing all Revenue , Profits , Orders from las
 <img width="1117" height="575" alt="image" src="https://github.com/user-attachments/assets/93803ee8-4c93-4877-ae52-7439d4c76d1d" />
  - As jiya tak is approved wholesaler then she can only supply the product offer and admin can approve that product and add to shop 
 Let’s add to shop this Britannia Treat Burst : click on add to shop   it will ask for category of product  specify the product category and click  on confirm.
+
 <img width="426" height="244" alt="image" src="https://github.com/user-attachments/assets/ac38543a-53fb-43ba-bba4-88e89d8ec1e2" />
-See product is added into shop :
+- See product is added into shop :
  <img width="1117" height="109" alt="image" src="https://github.com/user-attachments/assets/d172723d-8255-412d-8f4b-74e661a0c5e3" />
 <img width="1118" height="244" alt="image" src="https://github.com/user-attachments/assets/fcb58970-7af9-44ff-b3fc-1cb7b2eeccdc" />
 - Admin can chat with all customers and resolve their queries :
