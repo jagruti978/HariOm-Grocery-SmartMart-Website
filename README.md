@@ -153,10 +153,13 @@ Sales trend from last 7 days : Comparing all Revenue , Profits , Orders from las
 - Admin can manage wholesaler : Admin will approve wholesaler by their submitted documents and those approved wholesaler can submit the supply offer of products and then admin will decide to add those product in shop or not.
 <img width="1117" height="575" alt="image" src="https://github.com/user-attachments/assets/93803ee8-4c93-4877-ae52-7439d4c76d1d" />
  - As jiya tak is approved wholesaler then she can only supply the product offer and admin can approve that product and add to shop 
-Let’s add to shop this Britannia Treat Burst : click on add to shop   it will ask for category of product  specify the product category and click  on confirm.
+ - Let’s add to shop this Britannia Treat Burst : click on add to shop --> it will ask for category of product -->
+   specify the product category and click  on confirm.
 
 <img width="426" height="244" alt="image" src="https://github.com/user-attachments/assets/ac38543a-53fb-43ba-bba4-88e89d8ec1e2" />
+
 - See product is added into shop :
+  
  <img width="1117" height="109" alt="image" src="https://github.com/user-attachments/assets/d172723d-8255-412d-8f4b-74e661a0c5e3" />
 <img width="1118" height="244" alt="image" src="https://github.com/user-attachments/assets/fcb58970-7af9-44ff-b3fc-1cb7b2eeccdc" />
 - Admin can chat with all customers and resolve their queries :
@@ -171,10 +174,13 @@ Wholesaler registration :
 <img width="1110" height="246" alt="image" src="https://github.com/user-attachments/assets/f2d17e12-0b0a-475d-89d1-d45ce374d760" /> 
 Admin gets notify that new wholesaler register :
 <img width="618" height="256" alt="image" src="https://github.com/user-attachments/assets/4a0cda91-4236-4364-aadb-e79542bd2686" />
+
 - Now admin can approve or reject the verification as well :
+
 <img width="1104" height="320" alt="image" src="https://github.com/user-attachments/assets/26a869e8-0859-4394-a6ce-5bb1ba08b725" />
 - Let’s reject the wholesaler :write the reason and click on reject.
 <img width="520" height="176" alt="image" src="https://github.com/user-attachments/assets/578f0ec1-feca-41d6-8411-ad949bd589e3" />
+
 - On wholesaler dashboard you can see that your profile is reject and the rejection reason:
 <img width="1098" height="280" alt="image" src="https://github.com/user-attachments/assets/928abe0b-ad8d-49da-9a20-6318c5ba47e0" />
 - Re-submit document :
