@@ -1,0 +1,80 @@
+<%- include("../partials/head", { title: "Contact Us | HariOm SmartMart" }) %>
+<%- include("../partials/header") %>
+<style>
+
+
+body {
+  margin: 0;
+  font-family: 'Comfortaa', sans-serif;
+  min-height: 100vh;
+  background-color: #efe4d6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("../image/pattern.png"); 
+  background-repeat: repeat;
+  background-size: 220px;
+  opacity: 0.12;  
+  z-index: 0;
+}
+
+.top-bar,
+.container {
+  position: relative;
+  z-index: 5;
+}
+</style>
+
+<main class="container">
+  <section class="contact-card">
+
+    <h1 class="contact-title">
+      <i class="fa-solid fa-seedling"></i>
+      Get in Touch
+    </h1>
+
+    <p class="contact-text">
+      We’re always happy to hear from you.
+      Whether you have a question, feedback, or need assistance feel free to reach out.
+    </p>
+
+    <div class="contact-grid">
+
+    
+      <div class="contact-info">
+        <h3>Contact Details</h3>
+
+        <p>
+          <i class="fa-solid fa-location-dot"></i>
+          HariOm SmartMart, Local Market Area
+        </p>
+
+        <p>
+          <i class="fa-solid fa-phone"></i>
+          +91 934567898
+        </p>
+
+        <p>
+          <i class="fa-solid fa-envelope"></i>
+          support@hariomsmartmart.com
+        </p>
+
+        <p class="note">
+          We are available 24/7
+        </p>
+      </div>
+
+      
+
+    </div>
+
+  </section>
+</main>
+
+<%- include("../partials/footer") %>

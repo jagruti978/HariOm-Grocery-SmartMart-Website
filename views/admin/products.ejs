@@ -1,0 +1,230 @@
+<%- include("../partials/head", { title: pageTitle || "Manage Products" }) %>
+<%- include("../partials/admin-header") %>
+
+<style>
+
+.product-wrapper {
+  background: #fff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.product-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green-main);
+  margin-bottom: 20px;
+}
+
+.product-form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+.product-form input,
+.product-form select {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.product-form input:focus,
+.product-form select:focus {
+  outline: none;
+  border-color: var(--green-main);
+}
+
+.product-form button {
+  grid-column: span 3;
+  width: fit-content;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.admin-table th {
+  background: var(--green-main);
+  color: #fff;
+  padding: 12px;
+  text-align: left;
+}
+
+.admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table tr:hover {
+  background: #f9f9f9;
+}
+
+.product-img {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.action-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn {
+  background: #549e94;
+  border: none;
+  padding: 7px 12px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  background: #4a7b7a;
+}
+
+.danger-btn {
+  background: #e74c3c;
+  border: none;
+  padding: 7px 12px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.danger-btn:hover {
+  background: #c0392b;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status.active {
+  background: #eafaf1;
+  color: #27ae60;
+}
+
+.status.expired {
+  background: #fdecea;
+  color: #e74c3c;
+}
+
+.status.out_of_stock {
+  background: #fff4e5;
+  color: #e67e22;
+}
+</style>
+
+
+<div class="container">
+  <div class="product-wrapper">
+
+    <h2 class="product-title"><%= pageTitle || "Manage Products" %></h2>
+
+    <form
+      class="product-form"
+      action="<%= editProduct ? '/admin/products/update/' + editProduct.product_id : '/admin/products/add' %>"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <input type="text" name="product_name" placeholder="Product name" value="<%= editProduct ? editProduct.product_name : '' %>" required>
+      <input type="number" step="0.01" name="price" placeholder="Price" value="<%= editProduct ? editProduct.price : '' %>" required>
+      <input type="number" name="stock" placeholder="Stock" value="<%= editProduct ? editProduct.stock : '' %>" required>
+
+      <select name="category_id" required>
+        <option value="">Select Category</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat.category_id %>" <%= editProduct && cat.category_id == editProduct.category_id ? 'selected' : '' %>>
+            <%= cat.category_name %>
+          </option>
+        <% }) %>
+      </select>
+
+      <textarea 
+  name="description" 
+  placeholder="Product description" 
+  rows="3"
+  style="grid-column: span 3; padding:12px; border-radius:10px; border:1px solid #ddd;"
+><%= editProduct ? editProduct.description : '' %></textarea>
+
+      <input type="date" name="expiry_date" value="<%= editProduct && editProduct.expiry_date ? editProduct.expiry_date.toISOString().split('T')[0] : '' %>">
+
+      <% if(editProduct && editProduct.product_image){ %>
+        <label>Current Image:</label>
+        <img src="/uploads/<%= editProduct.product_image %>" class="product-img">
+      <% } %>
+
+
+      <input type="file" name="product_image" accept="image/*">
+
+      <button class="pill-btn">
+        <i class="fa-solid <%= editProduct ? 'fa-pen' : 'fa-plus' %>"></i>
+        <%= editProduct ? 'Update Product' : 'Add Product' %>
+      </button>
+    </form>
+
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach(p => { %>
+          <tr>
+            <td>
+              <% if(p.product_image){ %>
+                <img src="/uploads/<%= p.product_image %>" class="product-img">
+              <% } else { %>
+                <span>No Image</span>
+              <% } %>
+            </td>
+            <td><%= p.product_name %></td>
+            <td><%= p.category_name %></td>
+            <td>₹ <%= p.price %></td>
+            <td><%= p.stock %></td>
+            <td>
+              <span class="status <%= p.status %>">
+                <%= p.status.replace("_", " ") %>
+              </span>
+            </td>
+            <td>
+              <div class="action-btns">
+                <a href="/admin/products/edit/<%= p.product_id %>" class="edit-btn">
+                  <i class="fa-solid fa-pen"></i>
+                </a>
+                <form action="/admin/products/delete/<%= p.product_id %>" method="POST">
+                  <button class="danger-btn">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+  </div>
+</div>

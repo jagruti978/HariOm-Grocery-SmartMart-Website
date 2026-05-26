@@ -1,0 +1,115 @@
+
+<%- include("../partials/head", { title: pageTitle || "Manage Products" }) %>
+<%- include("../partials/admin-header") %>
+<div class="container">
+
+  <h2 style="margin-bottom: 20px;">Order Management</h2>
+
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Customer</th>
+        <th>Total</th>
+      
+<th>Order Status</th>
+<th>Payment State</th>
+<th>Action</th>
+
+        <th>Date</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% orders.forEach(order => { %>
+        <tr>
+          <td>#<%= order.order_id %></td>
+
+          <td>
+            <strong><%= order.customer_name %></strong><br>
+            <small>@<%= order.customer_username %></small>
+          </td>
+
+          <td>₹ <%= order.total_amount %></td>
+
+
+          <td>
+            <% if (order.order_status === 'delivered') { %>
+              <span class="status-pill success">Delivered</span>
+            <% } else { %>
+              <span class="status-pill warning">Placed</span>
+            <% } %>
+          </td>
+<td>
+  <% if(order.payment_status === 'paid'){ %>
+    <span class="status-pill success">Paid</span>
+  <% } else { %>
+    <span class="status-pill warning">Pending</span>
+  <% } %>
+</td>
+
+          <td>
+  <% if (order.payment_status === 'paid' && order.order_status === 'placed') { %>
+    <form method="POST" action="/admin/order/update-status/<%= order.order_id %>">
+      <button class="pill-btn small">Deliver</button>
+    </form>
+  <% } else { %>
+    —
+  <% } %>
+</td>
+
+          <td>
+            <%= new Date(order.created_at).toLocaleDateString("en-IN") %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+</div>
+
+<style>
+    .admin-table {
+  width: 100%;
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background: var(--green-main);
+  color: white;
+  padding: 14px;
+  font-size: 13px;
+}
+
+.admin-table td {
+  padding: 14px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.status-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pill.success {
+  background: #e7f7ef;
+  color: #2f8f5b;
+}
+
+.status-pill.warning {
+  background: #fff3e0;
+  color: #e67e22;
+}
+
+.pill-btn.small {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+</style>

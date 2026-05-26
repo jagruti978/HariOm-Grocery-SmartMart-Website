@@ -1,0 +1,108 @@
+<%- include("../partials/head", { title: "Chat Support" }) %>
+<%- include("../partials/admin-header") %>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Chat</title>
+  <style>
+ 
+
+.chat-wrapper {
+  max-width: 900px;
+  margin: 30px auto;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  height: 85vh;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.chat-header {
+  background: #2f5d0a;
+  color: #fff;
+  padding: 15px;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.chat-body {
+  flex: 1;
+  padding: 20px;
+  background: #cfcccc;
+  overflow-y: auto;
+}
+
+.message {
+  max-width: 60%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.sent {
+  background: #f8c6c6;
+  margin-left: auto;
+  border-bottom-right-radius: 0;
+}
+
+.received {
+  background: #fff;
+  margin-right: auto;
+  border-bottom-left-radius: 0;
+}
+
+/* Footer */
+.chat-footer {
+  display: flex;
+  padding: 12px;
+  background: #f0f0f0;
+}
+
+.chat-footer input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.chat-footer button {
+  margin-left: 10px;
+  background: #2f5d0a;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+  </style>
+</head>
+<body>
+
+<div class="chat-wrapper">
+  <div class="chat-header">Customer Chat</div>
+
+  <div class="chat-body">
+    <% chats.forEach(c => { %>
+      <div class="message <%= c.sender_id === session.user.id ? 'sent' : 'received' %>">
+        <%= c.message %>
+      </div>
+    <% }) %>
+  </div>
+
+  <form class="chat-footer" method="POST" action="/admin/chat/send">
+    <input type="hidden" name="receiver_id" value="<%= customerId %>">
+    <input type="text" name="message" placeholder="Reply..." required>
+    <button>➤</button>
+  </form>
+</div>
+
+</body>
+</html>

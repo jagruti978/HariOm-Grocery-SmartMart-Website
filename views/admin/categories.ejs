@@ -1,0 +1,130 @@
+<%- include("../partials/head", { title: "Manage Categories" }) %>
+<%- include("../partials/admin-header") %>
+
+<style>
+
+.category-wrapper {
+  background: #fff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.category-title {
+  color: var(--green-main);
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.category-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.category-form input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.category-form input:focus {
+  outline: none;
+  border-color: var(--green-main);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.admin-table th {
+  background: var(--green-main);
+  color: #fff;
+  padding: 12px;
+  text-align: left;
+}
+
+.admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table tr:hover {
+  background: #f9f9f9;
+}
+
+.action-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.danger-btn {
+  background: #e74c3c;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.danger-btn:hover {
+  background: #c0392b;
+}
+</style>
+
+<div class="container">
+  <div class="category-wrapper">
+
+    <h2 class="category-title">Manage Categories</h2>
+
+    <form class="category-form" action="/admin/categories/add" method="POST">
+      <input
+        type="text"
+        name="category_name"
+        placeholder="Enter category name"
+        required
+      >
+      <button class="pill-btn">
+        <i class="fa-solid fa-plus"></i> Add
+      </button>
+    </form>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Category Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% categories.forEach(cat => { %>
+          <tr>
+            <td><%= cat.category_id %></td>
+            <td><%= cat.category_name %></td>
+            <td>
+              <div class="action-btns">
+                <form
+                  action="/admin/categories/delete/<%= cat.category_id %>"
+                  method="POST"
+                >
+                  <button class="danger-btn">
+                    <i class="fa-solid fa-trash"></i> Delete
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+  </div>
+</div>

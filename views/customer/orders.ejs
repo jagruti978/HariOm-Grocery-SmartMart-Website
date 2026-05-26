@@ -1,0 +1,259 @@
+<%- include("../partials/head", { title: "My Orders" }) %>
+
+<style>
+   
+body { font-family: "Comfortaa", sans-serif; background-color: #d1bba6; margin:0; color:#3b3b3b;}
+.top-bar { background:#f2c9cf; display:flex; justify-content:space-between; padding:12px 30px; align-items:center;}
+.top-left { display:flex; align-items:center; gap:12px; }
+.logo-img { height:45px; }
+.brand-name { font-size:18px; font-weight:700; color:#3b6e22;}
+.brand-sub { font-size:12px; color:#555;}
+.top-right { display:flex; gap:12px; align-items:center; }
+.nav-btn, .order-btn { background:white; padding:8px 16px; border-radius:20px; font-weight:600; cursor:pointer; color:#3b6e22; transition:0.2s;}
+.nav-btn:hover, .order-btn:hover { background:#8fb24d; color:white;}
+.logout-btn { background:#8fb24d; color:white; border:none; padding:8px 16px; border-radius:20px; cursor:pointer;}
+table { width:100%; border-collapse:collapse; margin-top:30px;}
+th, td { padding:12px; border:1px solid #ccc; text-align:center;}
+.product-img { width:80px; height:80px; object-fit:contain;}
+.add-more-btn { background:#8fb24d; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; margin-top:15px;}
+
+
+.orders-container {
+  background: transparent;
+  padding: 10px;
+}
+
+.orders-container table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.orders-container thead {
+  background: #4a5d0b; 
+}
+
+.orders-container th {
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+}
+
+.orders-container tbody tr {
+  background: #fff;
+  transition: 0.25s ease;
+}
+
+.orders-container tbody tr:hover {
+  background: #f9f5ef;
+  transform: scale(1.01);
+}
+
+.orders-container td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #333;
+  border: none;
+}
+
+.orders-container tbody tr:not(:last-child) td {
+  border-bottom: 1px solid #eee;
+}
+
+.status-paid {
+  background: #e7f7ef;
+  color: #2f8f5b;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: #fff3e0;
+  color: #e67e22;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+.pay-btn {
+  border: none;
+  padding: 7px 16px;
+  border-radius: 20px;
+  background: #4aa391; 
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.pay-btn:hover {
+  background: #3c8f7e;
+}
+
+.paid-badge {
+  background: #e7f7ef;
+  color: #2f8f5b;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+</style>
+
+
+
+<div class="top-bar">
+  <div class="top-left">
+    <img src="/image/Logo.png" class="logo-img">
+    <div>
+      <div class="brand-name">HariOm SmartMart</div>
+      <div class="brand-sub">Digital Grocery & Supplies</div>
+    </div>
+  </div>
+
+  <div class="top-right">
+    <div class="nav-btn" onclick="location.href='/customer/dashboard'">Home</div>
+    <div class="order-btn" onclick="location.href='/customer/orders'">My Orders
+    </div>
+    <button class="logout-btn" onclick="location.href='/customer/logout'">Logout</button>
+  </div>
+</div>
+
+<div style="margin-top: 20px;">
+  <h2>My Orders</h2>
+
+</div>
+<div class="orders-container">
+
+ 
+  <% if (orders.length === 0) { %>
+    <p>No orders yet.</p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Payment</th>
+<th>Action</th>
+
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(order => { %>
+          <tr>
+          <td data-label="Order ID"><%= order.order_id %></td>
+<td data-label="Total">₹<%= order.total_amount %></td>
+<td data-label="Status"><%= order.order_status %></td>
+<td>
+  <% if (order.payment_status === "paid") { %>
+   <span class="status-paid">Paid</span>
+  <% } else { %>
+   <span class="status-pending">Pending</span>
+
+  <% } %>
+</td>
+
+<td>
+  <% if (order.payment_status === 'pending') { %>
+    <button 
+      class="pay-btn"
+      data-order-id="<%= order.order_id %>"
+      data-amount="<%= order.total_amount %>">
+      Pay Now
+    </button>
+  <% } else { %>
+   <span class="paid-badge">Paid</span>
+  <% } %>
+</td>
+
+<td>
+  <%= new Date(order.created_at).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  }) %>
+</td>
+
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+document.querySelectorAll(".pay-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const orderId = btn.dataset.orderId;
+    startPayment(orderId);
+  });
+});
+
+function startPayment(orderId) {
+  fetch("/customer/payment/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orderId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (!data.success) {
+      alert("Payment init failed");
+      return;
+    }
+
+    const options = {
+      key: data.key,
+      amount: data.amount,
+      currency: "INR",
+      name: "HariOm SmartMart",
+      description: "Order Payment",
+      order_id: data.razorpayOrderId,
+
+      handler: function (response) {
+        verifyPayment(response, orderId);
+      }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  });
+}
+
+function verifyPayment(response, orderId) {
+  fetch("/customer/payment/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      paymentId: response.razorpay_payment_id,
+      orderId
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("Payment Successful!");
+      location.reload();
+    } else {
+      alert("Payment verification failed");
+    }
+  });
+}
+</script>

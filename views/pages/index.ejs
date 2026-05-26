@@ -1,0 +1,103 @@
+<%- include("../partials/head", { title: "HariOm SmartMart" }) %>
+<%- include("../partials/header") %>
+
+<nav class="category-ribbon" id="categoryRibbon" aria-label="Categories">
+   
+</nav>
+
+<main class="container">
+
+  
+  <section class="hero-carousel">
+
+    <div class="carousel-slide active" style="background-image:url('/image/heroimg1.jpeg')">
+      <div class="hero-content">
+        <h2>Everyday Essentials, Made Simple</h2>
+        <p>Smart grocery shopping with trusted quality.</p>
+      </div>
+    </div>
+
+    <div class="carousel-slide" style="background-image:url('/image/heroimg2.jpeg')">
+      <div class="hero-content">
+        <h2>Clean • Fresh • Reliable</h2>
+        <p>Household, snacks & daily needs in one place.</p>
+      </div>
+    </div>
+
+    <div class="carousel-slide" style="background-image:url('/image/heroimg3.jpeg')">
+      <div class="hero-content">
+        <h2>HariOm SmartMart</h2>
+        <p>Personal & Baby Care</p>
+      </div>
+    </div>
+
+    <button class="carousel-arrow prev">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <button class="carousel-arrow next">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+  </section>
+
+</main>
+
+<%- include("../partials/footer") %>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const slides = document.querySelectorAll(".carousel-slide");
+  const nextBtn = document.querySelector(".carousel-arrow.next");
+  const prevBtn = document.querySelector(".carousel-arrow.prev");
+
+  if (slides.length) {
+    let index = 0;
+
+    function showSlide(i) {
+      slides.forEach(slide => slide.classList.remove("active"));
+      slides[i].classList.add("active");
+    }
+
+    nextBtn.addEventListener("click", () => {
+      index = (index + 1) % slides.length;
+      showSlide(index);
+    });
+
+    prevBtn.addEventListener("click", () => {
+      index = (index - 1 + slides.length) % slides.length;
+      showSlide(index);
+    });
+
+    setInterval(() => {
+      index = (index + 1) % slides.length;
+      showSlide(index);
+    }, 5000);
+  }
+
+const categories = [
+  "Baby Care",
+  "Beverages & Snacks",
+  "Biscuits & Chocolates",
+  "Breakfast & Dairy",
+  "Cleanings & Household",
+  "Grocery & Staples",
+  "Noodles & Sauces",
+  "Personal Care",
+  "Stationery"
+];
+
+const ribbon = document.getElementById("categoryRibbon");
+
+if (ribbon) {
+  categories.forEach(cat => {
+    const a = document.createElement("a");
+    a.href = "/login";  
+    a.textContent = cat;
+    ribbon.appendChild(a);
+  });
+}
+
+});
+</script>

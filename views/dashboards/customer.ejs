@@ -1,0 +1,430 @@
+<%- include("../partials/head", { title: "Customer Dashboard" }) %>
+<% 
+  const wishlistIds = (typeof wishlist !== 'undefined' && wishlist.length) 
+    ? wishlist.map(w => w.product_id) 
+    : [];
+%>
+
+<style>
+
+body {
+   font-family: "Comfortaa", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  background-color: #d1bba6; 
+}
+
+
+.top-bar {
+  background: #f2c9cf;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 30px;
+}
+
+.top-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-img {
+  height: 45px;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3b6e22;
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: #555;
+}
+
+.top-center {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-box {
+  display: flex;
+  background: white;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.search-box input {
+  border: none;
+  padding: 10px 15px;
+  width: 260px;
+  outline: none;
+}
+
+.search-box button {
+  background: #8fb24d;
+  border: none;
+  color: white;
+  padding: 0 15px;
+  cursor: pointer;
+}
+
+.category-btn {
+  background: white;
+  border-radius: 30px;
+  padding: 10px 16px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.top-right {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.cart-btn {
+  background: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+}
+
+.logout-btn {
+  background: #8fb24d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+
+.ribbon {
+  display: flex;
+  gap: 12px;
+  padding: 15px 30px;
+  overflow-x: auto;
+  background: #e7efd9;
+}
+
+.ribbon::-webkit-scrollbar {
+  display: none;
+}
+
+.ribbon-btn {
+  background: #8fb24d;
+  color: #183b0f;
+  padding: 10px 16px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+
+.category-section {
+  padding: 25px 30px;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2f5d0a;
+}
+
+.show-more {
+  color: #2f5d0a;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.product-grid {
+  display: flex;
+  gap: 18px;
+  margin-top: 15px;
+}
+
+.product-card {
+  background: #fdecec;
+  border-radius: 16px;
+  padding: 15px;
+  width: 180px;
+  text-align: center;
+}
+
+.product-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+}
+
+.product-name {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.product-price {
+  font-weight: 700;
+  color: #3b6e22;
+  margin: 6px 0;
+}
+
+.add-btn {
+  background: #3b6e22;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.nav-btn {
+  background: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #3b6e22;
+  transition: 0.2s ease;
+}
+
+.nav-btn:hover {
+  background: #8fb24d;
+  color: white;
+}
+.nav-btn i,
+.cart-btn i,
+.logout-btn i {
+  margin-right: 6px;
+}
+.cart-btn {
+  background: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.cart-btn:hover {
+  background: #8fb24d;
+  color: white;
+}
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #3b6e22;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: none;
+  z-index: 999;
+  font-weight: 600;
+}
+.toast a {
+  color: #ffd700;
+  text-decoration: underline;
+  margin-left: 8px;
+}
+
+.wishlist-btn {
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 18px;
+  cursor: pointer;
+}
+.wishlist-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Heart toggle */
+.wishlist-btn i.filled { color: #c0392b; }
+</style>
+
+</style>
+
+<div class="toast" id="toast">
+  Product added to cart 
+  <a href="/customer/cart">View Cart</a>
+</div>
+
+
+<div class="top-bar">
+  <div class="top-left">
+    <img src="/image/Logo.png" class="logo-img">
+    <div>
+      <div class="brand-name">HariOm SmartMart</div>
+      <div class="brand-sub">Digital Grocery & Supplies</div>
+    </div>
+  </div>
+
+  <div class="top-center">
+    <div class="search-box">
+      <input id="searchInput" placeholder="Search for product...">
+      <button> <i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+  </div>
+
+  <div class="top-right">
+  <div class="nav-btn" onclick="location.href='/customer/orders'">
+    <i class="fa-solid fa-box"></i> Orders
+  </div>
+
+  <div class="nav-btn" onclick="location.href='/customer/wishlist'">
+    <i class="fa-solid fa-heart"></i> Wishlist
+  </div>
+  <div class="nav-btn" onclick="location.href='/customer/chat'">
+    <i class="fa-solid fa-comments"></i> Chat
+  </div>
+<div class="cart-btn" onclick="location.href='/customer/cart'">
+  <i class="fa-solid fa-cart-shopping"></i>
+  <span><%= cartCount %></span>
+</div>
+
+
+  <button class="logout-btn" onclick="location.href='/customer/logout'">
+    <i class="fa-solid fa-right-from-bracket"></i> Logout
+  </button>
+</div>
+
+</div>
+
+
+<div class="ribbon">
+  <% categories.forEach(cat => { %>
+    <div class="ribbon-btn" data-id="<%= cat.category_id %>">
+  <%= cat.category_name %>
+</div>
+
+  <% }) %>
+</div>
+
+<% categories.forEach(cat => { %>
+  <% if (cat.products.length) { %>
+
+  <div class="category-section" id="cat-<%= cat.category_id %>">
+    <div class="category-header">
+      <div class="category-title"><%= cat.category_name %></div>
+      <div class="show-more">Show More</div>
+    </div>
+
+    <div class="product-grid">
+      <% cat.products.forEach(p => { %>
+        <div class="product-card" data-name="<%= p.product_name.toLowerCase() %>">
+          <a href="/customer/product/<%= p.product_id %>">
+  <img src="/uploads/<%= p.product_image %>" style="cursor:pointer;">
+</a>
+          <div class="product-name"><%= p.product_name %></div>
+          <div class="product-price">₹<%= p.price %></div>
+         <button class="add-btn" data-id="<%= p.product_id %>">Add to Cart</button>
+          <button class="wishlist-btn" data-id="<%= p.product_id %>" 
+      <% if (wishlistIds.includes(p.product_id)) { %> data-added="true" <% } %>>
+      <i class="<%= wishlistIds.includes(p.product_id) ? 'fa-solid filled' : 'fa-regular' %> fa-heart"></i>
+    </button>
+
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <% } %>
+<% }) %>
+
+<script>
+function scrollToCat(id) {
+  document.getElementById("cat-" + id)
+    ?.scrollIntoView({ behavior: "smooth" });
+}
+
+document.getElementById("searchInput").addEventListener("keyup", function () {
+  const text = this.value.toLowerCase();
+  document.querySelectorAll(".product-card").forEach(card => {
+    card.style.display = card.dataset.name.includes(text)
+      ? "block"
+      : "none";
+  });
+});
+
+document.querySelectorAll(".ribbon-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    scrollToCat(btn.dataset.id);
+  });
+});
+
+function showToast() {
+  const t = document.getElementById("toast");
+  t.style.display = "block";
+  setTimeout(() => { t.style.display = "none"; }, 3000);
+}
+
+document.querySelectorAll(".add-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const productId = btn.dataset.id;
+
+    fetch("/customer/cart/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",  // important to send session cookie
+      body: JSON.stringify({ productId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        
+        const cartCountEl = document.querySelector(".cart-btn span");
+        cartCountEl.textContent = parseInt(cartCountEl.textContent || 0) + 1;
+
+        showToast();
+      } else if (data.message) {
+        alert(data.message);
+      } else {
+        alert("Error adding product");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Something went wrong");
+    });
+  });
+});
+
+document.querySelectorAll(".wishlist-btn").forEach(btn => {
+  const icon = btn.querySelector("i");
+
+
+  btn.addEventListener("mouseenter", () => icon.classList.replace("fa-regular", "fa-solid"));
+  btn.addEventListener("mouseleave", () => { 
+    if(!btn.dataset.added) icon.classList.replace("fa-solid", "fa-regular"); 
+  });
+
+  btn.addEventListener("click", () => {
+    fetch("/customer/wishlist/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId: btn.dataset.id })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        btn.dataset.added = "true";       
+        icon.classList.replace("fa-regular", "fa-solid");
+        alert("Added to Wishlist ");
+      } else {
+        alert(data.message);
+      }
+    });
+  });
+});
+
+
+
+</script>

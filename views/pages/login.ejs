@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | HariOm SmartMart</title>
+
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+ 
+
+
+body {
+  margin: 0;
+  font-family: 'Comfortaa', sans-serif;
+  min-height: 100vh;
+  background-color: #efe4d6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("image/pattern.png");
+  background-repeat: repeat;
+  background-size: 200px;
+  opacity: 0.11;   
+  z-index: 0;
+}
+
+
+.container,
+.top-bar {
+  position: relative;
+  z-index: 5;
+}
+
+
+.auth-card {
+  background: #FFF2F3;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+}
+
+
+
+.container {
+  position: relative;
+  z-index: 5;
+}
+
+
+.trolley-animation {
+  position: absolute;
+  bottom: 0;
+  right: -350px;
+  animation: moveFromRight 5s ease-out forwards;
+}
+
+.trolley-animation img {
+  width: 340px;
+}
+
+@keyframes moveFromRight {
+  0% { right: -350px; }
+  100% { right: -40px; }
+}
+  </style>
+</head>
+<body>
+
+
+  <div class="top-bar">
+    <div class="top-left">
+      <img src="image/Logo.png" class="logo-img">
+      <div class="brand-text">
+        <div class="brand-name">HariOm <span>SmartMart</span></div>
+        <div class="brand-sub">Digital Grocery & Supplies</div>
+      </div>
+    </div>
+
+    <div class="top-right">
+      <a href="/" class="link">Home</a>
+      <a href="/about" class="link">About</a>
+      <a href="/contact" class="link">Contact</a>
+    </div>
+  </div>
+
+ \
+  <!-- LOGIN CARD -->
+ <main class="container">
+   <div class="trolley-animation">
+  <img src="image/kid-trolley.png" alt="Shopping Kid">
+</div>
+
+    <section class="auth-card">
+
+      <h2 class="auth-title">
+        <i class="fa-regular fa-user"></i> Welcome Back
+      </h2>
+      <p class="auth-sub">
+        Login to continue shopping with love & care
+      </p>
+
+      <form id="loginForm" class="auth-form">
+
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="text" id="username" placeholder="Email or Mobile" required>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="password" placeholder="Password" required>
+        </div>
+
+        <button type="submit" class="auth-btn">
+          Login
+        </button>
+
+      </form>
+
+      <p class="auth-switch">
+        New here? <a href="/signup">Create an account</a>
+      </p>
+
+    </section>
+  </main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+ 
+  const loginForm = document.getElementById("loginForm");
+  const usernameInput = document.getElementById("username");
+  const passwordInput = document.getElementById("password");
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: usernameInput.value.trim(),
+          password: passwordInput.value
+        })
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        if (result.role === "customer") {
+          window.location.href = "/customer/dashboard";
+        } else if (result.role === "wholesaler") {
+          window.location.href = "/wholesaler/dashboard";
+        } else {
+          window.location.href = "/admin/dashboard";
+        }
+      } else {
+        alert(result.message);
+      }
+
+    } catch (err) {
+      alert("Server not reachable");
+    }
+  });
+
+ 
+
+});
+</script>
+    
+
+</body>
+</html>

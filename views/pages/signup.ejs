@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign Up | HariOm SmartMart</title>
+
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+ 
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet">
+
+
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+
+
+body {
+  margin: 0;
+  font-family: 'Comfortaa', sans-serif;
+  min-height: 100vh;
+  background-color: #efe4d6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("../image/pattern.png"); 
+  background-repeat: repeat;
+  background-size: 220px;
+  opacity: 0.12;   
+  z-index: 0;
+}
+
+
+.top-bar,
+.container {
+  position: relative;
+  z-index: 5;
+}
+</style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="top-left">
+      <img src="image/Logo.png" class="logo-img">
+      <div class="brand-text">
+        <div class="brand-name">HariOm <span>SmartMart</span></div>
+        <div class="brand-sub">Digital Grocery & Supplies</div>
+      </div>
+    </div>
+
+     <div class="top-right">
+      <a href="/" class="link">Home</a>
+      <a href="/about" class="link">About</a>
+      <a href="/contact" class="link">Contact</a>
+    </div>
+  </div>
+
+
+ 
+ <main class="container">
+    <section class="auth-card">
+
+      <h2 class="auth-title">
+        <i class="fa-regular fa-user"></i> Create Account
+      </h2>
+      <p class="auth-sub">
+        Shop with HariOm SmartMart 
+      </p>
+
+      <form id="signupForm" class="auth-form" enctype="multipart/form-data">
+
+
+
+        <div class="input-group">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" id="name" name="name" placeholder="Full Name" required>
+        </div>
+
+       
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="text" id="username" name="username" placeholder="Email or Mobile" required>
+        </div>
+
+  
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="password" name="password" placeholder="Password" required>
+        </div>
+
+
+        <div class="input-group">
+          <i class="fa-solid fa-user-tag"></i>
+  <select id="role" name="role" required class="role-select">
+            <option value="">Select Role</option>
+            <option value="customer">Customer</option>
+<option value="wholesaler">Wholesaler</option>
+<option value="admin">Admin</option>
+
+          </select>
+        </div>
+
+      
+        <div id="customerFields" >
+
+          <div class="input-group"  style="margin-bottom: 15px;">
+            <i class="fa-solid fa-calendar"></i>
+            <input type="number" id="age" name="age" placeholder="Age">
+          </div>
+
+          <div class="input-group" >
+            <i class="fa-solid fa-location-dot"></i>
+            <input type="text" id="state" name="state" placeholder="State">
+          </div>
+
+        </div>
+
+     
+        <div id="wholesalerFields">
+
+  <div class="input-group" style="margin-bottom: 15px;">
+    <i class="fa-solid fa-receipt"></i>
+    <input type="text" id="gst" name="gst_number" placeholder="GST Number">
+  </div>
+
+  <div class="input-group">
+    <i class="fa-solid fa-file"></i>
+   <input type="file" id="docs" name="docs" accept="image/*,.pdf">
+  </div>
+
+</div>
+<p id="successMsg" style="color: green; font-weight: 600; display: none;">
+  Signup successful!
+</p>
+<button type="submit" class="auth-btn">
+  Sign Up
+</button>
+
+
+
+      </form>
+
+      <p class="auth-switch">
+        Already have an account?
+        <a href="/login">Login</a>
+      </p>
+
+    </section>
+   
+  </main>
+
+<script>
+  const signupForm = document.getElementById("signupForm");
+  const successMsg = document.getElementById("successMsg");
+
+
+  const nameInput = document.getElementById("name");
+  const usernameInput = document.getElementById("username");
+  const passwordInput = document.getElementById("password");
+  const roleInput = document.getElementById("role");
+  const ageInput = document.getElementById("age");
+  const stateInput = document.getElementById("state");
+  const gstInput = document.getElementById("gst");
+  const docsInput = document.getElementById("docs");
+
+  const customerFields = document.getElementById("customerFields");
+  const wholesalerFields = document.getElementById("wholesalerFields");
+
+  roleInput.addEventListener("change", () => {
+    customerFields.style.display = "none";
+    wholesalerFields.style.display = "none";
+
+    if (roleInput.value === "customer") customerFields.style.display = "block";
+    if (roleInput.value === "wholesaler") wholesalerFields.style.display = "block";
+  });
+
+  signupForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+
+    const formData = new FormData();
+
+    formData.append("name", nameInput.value.trim());
+    formData.append("username", usernameInput.value.trim());
+    formData.append("password", passwordInput.value);
+    formData.append("role", roleInput.value);
+
+    if (roleInput.value === "customer") {
+      formData.append("age", ageInput.value);
+      formData.append("state", stateInput.value);
+    }
+
+    if (roleInput.value === "wholesaler") {
+      formData.append("gst_number", gstInput.value);
+      if (docsInput.files.length > 0) {
+        formData.append("docs", docsInput.files[0]); 
+      }
+    }
+
+    const res = await fetch("http://localhost:5000/api/auth/signup", {
+      method: "POST",
+      body: formData 
+    });
+
+    const result = await res.json();
+
+ if (res.ok) {
+      successMsg.style.display = "block";
+      signupForm.reset();
+
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
+    } else {
+      alert("Signup failed");
+    }
+
+  });
+</script>
+
+
+
+
+</body>
+</html>

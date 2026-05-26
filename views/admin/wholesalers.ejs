@@ -1,0 +1,374 @@
+<%- include("../partials/head", { title: "Manage Wholesalers" }) %>
+<%- include("../partials/admin-header") %>
+
+<style>
+
+.product-wrapper {
+  background: #fff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.product-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green-main);
+  margin-bottom: 20px;
+}
+
+/* TABLE */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.admin-table th {
+  background: var(--green-main);
+  color: #fff;
+  padding: 12px;
+  text-align: left;
+}
+
+.admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table tr:hover {
+  background: #f9f9f9;
+}
+
+/* ACTION BUTTONS */
+.action-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.approve-btn {
+  background: #27ae60;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 20px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.approve-btn:hover {
+  background: #1e8449;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status.verified {
+  background: #eafaf1;
+  color: #27ae60;
+}
+
+.status.pending {
+  background: #fff4e5;
+  color: #e67e22;
+}
+
+.doc-link {
+  color: var(--green-main);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.doc-link:hover {
+  text-decoration: underline;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-box {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 300px;
+  animation: slideUp 0.3s ease;
+}
+
+.modal-box select {
+  width: 100%;
+  padding: 8px;
+  margin: 15px 0;
+  border-radius: 6px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cancel-btn {
+  background: #ccc;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+</style>
+
+<div class="container">
+  <div class="product-wrapper">
+
+    <h2 class="product-title">Verified Wholesalers</h2>
+
+    
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>GST Number</th>
+          <th>Document</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% wholesalers.forEach(w => { %>
+          <tr>
+            <td><%= w.user_id %></td>
+            <td><%= w.name %></td>
+            <td><%= w.username %></td>
+            <td><%= w.gst_number || "N/A" %></td>
+
+            <td>
+              <% if(w.business_docs) { %>
+                <a
+                  href="/uploads/<%= w.business_docs %>"
+                  target="_blank"
+                  class="doc-link"
+                >
+                  View Document
+                </a>
+              <% } else { %>
+                <span>N/A</span>
+              <% } %>
+            </td>
+
+            <td>
+         <% if(w.status === 'approved') { %>
+  <span class="status verified">Approved</span>
+<% } else if(w.status === 'rejected') { %>
+  <span class="status pending">Rejected</span>
+<% } else { %>
+  <span class="status pending">Pending</span>
+<% } %>
+            </td>
+
+           <td>
+ <% if(w.status === 'pending') { %>
+    <div class="action-btns">
+      <form action="/admin/wholesalers/approve/<%= w.user_id %>" method="POST">
+        <button class="approve-btn">Approve</button>
+      </form>
+
+     <form action="/admin/wholesalers/reject/<%= w.user_id %>" method="POST">
+  <input type="text" name="reason" placeholder="Reason" required style="width:120px;">
+  <button class="approve-btn" style="background:#c0392b;">Reject</button>
+</form>
+    </div>
+  <% } else if(w.status === 'approved') { %>
+  <div class="action-btns">
+    <form action="/admin/wholesalers/revoke/<%= w.user_id %>" method="POST">
+  <button class="approve-btn" style="background:#f39c12;">Revoke</button>
+</form>
+  </div>
+<% } else { %>
+  <div class="action-btns">
+    <form action="/admin/wholesalers/approve/<%= w.user_id %>" method="POST">
+      <button class="approve-btn">Approve</button>
+    </form>
+
+    <form action="/admin/wholesalers/reject/<%= w.user_id %>" method="POST">
+      <button class="approve-btn" style="background:#c0392b;">Reject</button>
+    </form>
+  </div>
+<% } %>
+</td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+  </div>
+
+<!-- ================= SUPPLY OFFERS ================= -->
+  <div class="product-wrapper" style="margin-top:40px;">
+
+    <h2 class="product-title">Wholesaler Supply Offers</h2>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Offer ID</th>
+          <th>Wholesaler</th>
+          <th>Product</th>
+          <th>Price</th>
+          <th>MOQ</th>
+          <th>Stock</th>
+          <th>Catalog</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% if (offers && offers.length === 0) { %>
+          <tr>
+            <td colspan="9" style="text-align:center;padding:20px;">
+              No supply offers found
+            </td>
+          </tr>
+        <% } %>
+
+        <% offers && offers.forEach(o => { %>
+          <tr>
+            <td><%= o.offer_id %></td>
+            <td><%= o.name %></td>
+            <td><%= o.product_name %></td>
+            <td>₹ <%= o.price %></td>
+            <td><%= o.moq %></td>
+            <td><%= o.stock_available %></td>
+
+            <td>
+              <% if(o.catalog_file){ %>
+                <a href="/uploads/<%= o.catalog_file %>" target="_blank" class="doc-link">
+                  View
+                </a>
+              <% } else { %> — <% } %>
+            </td>
+
+            <td>
+             <% if(o.status === 'approved'){ %>
+  <span class="status verified">Approved</span>
+<% } else if(o.status === 'published'){ %>
+  <span class="status verified">Added To Shop</span>
+<% } else if(o.status === 'rejected'){ %>
+  <span class="status pending">Rejected</span>
+<% } else { %>
+  <span class="status pending">Pending</span>
+<% } %>
+            </td>
+
+           <td>
+  <% if(o.status === 'pending'){ %>
+
+    <div class="action-btns">
+      <form action="/admin/supply-offers/approve/<%= o.offer_id %>" method="POST">
+        <button class="approve-btn">Approve</button>
+      </form>
+
+      <form action="/admin/supply-offers/reject/<%= o.offer_id %>" method="POST">
+        <button class="approve-btn" style="background:#c0392b;">Reject</button>
+      </form>
+    </div>
+
+  <% } else if(o.status === 'approved'){ %>
+
+    <div class="action-btns">
+     <button 
+  type="button"
+  class="approve-btn"
+  style="background:#2980b9;"
+  data-id="<%= o.offer_id %>"
+  onclick="openCategoryModal(this)"
+>
+  Add To Shop
+</button>
+    </div>
+
+  <% } else { %>
+    —
+  <% } %>
+</td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+  </div>
+
+
+
+<div id="categoryModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Select Category</h3>
+
+    <form id="categoryForm" method="POST">
+      <select name="category_id" required>
+        <option value="">Select Category</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat.category_id %>">
+            <%= cat.category_name %>
+          </option>
+        <% }) %>
+      </select>
+
+      <div class="modal-actions">
+        <button type="submit" class="approve-btn">Confirm</button>
+        <button type="button" class="cancel-btn" onclick="closeCategoryModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</div>
+
+<script>
+  function openCategoryModal(btn) {
+    const offerId = btn.getAttribute("data-id");
+
+    const modal = document.getElementById("categoryModal");
+    const form = document.getElementById("categoryForm");
+
+    form.action = "/admin/supply-offers/add-to-shop/" + offerId;
+    modal.style.display = "flex";
+  }
+
+  function closeCategoryModal() {
+    document.getElementById("categoryModal").style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById("categoryModal");
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  };
+</script>

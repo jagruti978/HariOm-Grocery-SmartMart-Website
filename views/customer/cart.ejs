@@ -1,0 +1,338 @@
+<%- include("../partials/head", { title: "My Cart" }) %>
+
+<style>
+
+body { font-family: "Comfortaa", sans-serif; background-color: #d1bba6; margin:0; color:#3b3b3b;}
+.top-bar { background:#f2c9cf; display:flex; justify-content:space-between; padding:12px 30px; align-items:center;}
+.top-left { display:flex; align-items:center; gap:12px; }
+.logo-img { height:45px; }
+.brand-name { font-size:18px; font-weight:700; color:#3b6e22;}
+.brand-sub { font-size:12px; color:#555;}
+.top-right { display:flex; gap:12px; align-items:center; }
+.nav-btn, .cart-btn { background:white; padding:8px 16px; border-radius:20px; font-weight:600; cursor:pointer; color:#3b6e22; transition:0.2s;}
+.nav-btn:hover, .cart-btn:hover { background:#8fb24d; color:white;}
+.logout-btn { background:#8fb24d; color:white; border:none; padding:8px 16px; border-radius:20px; cursor:pointer;}
+table { width:100%; border-collapse:collapse; margin-top:30px;}
+th, td { padding:12px; border:1px solid #ccc; text-align:center;}
+.product-img { width:80px; height:80px; object-fit:contain;}
+.add-more-btn { background:#8fb24d; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; margin-top:15px;}
+.toast {
+  position: fixed; bottom: 20px; right: 20px; background: #3b6e22; color:white; padding:12px 20px;
+  border-radius:8px; display:none; z-index:999; font-weight:600;
+}
+.toast a { color:#ffd700; text-decoration:underline; margin-left:8px;}
+
+
+.cart-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  background: #fff7f0;
+  border-radius: 18px;
+  padding: 25px 30px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+}
+
+.cart-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2f5d0a;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.cart-table { width: 100%; border-collapse: collapse; }
+.cart-table thead { background: #e7efd9; }
+.cart-table th { padding: 14px; font-weight: 700; color: #2f5d0a; }
+.cart-table td { padding: 16px; border-bottom: 1px solid #ddd; }
+
+.product-img {
+  width: 70px; height: 70px; object-fit: contain;
+  background: white; padding: 6px; border-radius: 10px;
+}
+
+.cart-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 25px; flex-wrap: wrap; gap: 15px;
+}
+
+.grand-total { font-size: 20px; font-weight: 700; }
+.grand-total span { color: #3b6e22; }
+
+.qty-box { display:flex; align-items:center; justify-content:center; gap:10px; }
+.qty-btn {
+  width:34px; height:34px; border:none; border-radius:6px;
+  background: #8fb24d; color:white; font-size:18px; cursor:pointer;
+}
+.qty-btn:hover { background:#2f5d0a;; }
+.qty-value { min-width:20px; font-weight:700; }
+
+.remove-text { margin-top:6px; font-size:12px; }
+.remove-text a { color: #2f5d0a; text-decoration:none; font-weight:600; }
+
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: 3fr 1.3fr;
+  gap: 25px;
+}
+
+.side-box {
+  background: #fff7f0;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.coupon-input { display:flex; gap:10px; }
+.coupon-input input {
+  flex:1; padding:10px;
+  border-radius:8px; border:1px solid #ccc;
+}
+.coupon-input button {
+  background:#8fb24d; color:white;
+  border:none; padding:10px 16px;
+  border-radius:8px; cursor:pointer;
+  font-weight:600;
+}
+
+.summary-row {
+  display:flex; justify-content:space-between;
+  margin:12px 0; font-weight:600;
+}
+.summary-total {
+  font-size:18px; font-weight:800; color:#8fb24d;
+}
+
+.checkout-btn {
+  width:100%; margin-top:15px;
+  background:#8fb24d; color:white;
+  border:none; padding:14px;
+  border-radius:10px;
+  font-size:16px; font-weight:700;
+  cursor:pointer;
+}
+</style>
+
+<div class="top-bar">
+  <div class="top-left">
+    <img src="/image/Logo.png" class="logo-img">
+    <div>
+      <div class="brand-name">HariOm SmartMart</div>
+      <div class="brand-sub">Digital Grocery & Supplies</div>
+    </div>
+  </div>
+
+  <div class="top-right">
+    <div class="nav-btn" onclick="location.href='/customer/dashboard'">Home</div>
+    <div class="cart-btn" onclick="location.href='/customer/cart'">
+       <i class="fa-solid fa-cart-shopping"></i> <span><%= cartCount %></span>
+    </div>
+    <button class="logout-btn" onclick="location.href='/customer/logout'">Logout</button>
+  </div>
+</div>
+
+<% if (cartItems.length === 0) { %>
+  <div style="text-align:center; padding:50px;">
+    <h2>Your Cart is Empty</h2>
+    <button class="add-more-btn" onclick="location.href='/customer/dashboard'">Continue Shopping</button>
+  </div>
+<% } else { %>
+
+<div class="cart-container">
+  <h2 class="cart-title">My Shopping Cart</h2>
+
+  <div class="cart-layout">
+
+    <div>
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let grandTotal = 0; %>
+          <% cartItems.forEach(item => { %>
+            <% let total = item.price * item.quantity; grandTotal += total; %>
+            <tr>
+              <td><img src="/uploads/<%= item.product_image %>" class="product-img"></td>
+              <td><%= item.product_name %></td>
+              <td>₹<%= item.price %></td>
+              <td>
+                <div class="qty-box">
+                  <button class="qty-btn minus" data-id="<%= item.product_id %>">−</button>
+                  <span class="qty-value"><%= item.quantity %></span>
+                  <button class="qty-btn plus" data-id="<%= item.product_id %>">+</button>
+                </div>
+                <div class="remove-text">
+                  <a href="/customer/cart/remove/<%= item.product_id %>">REMOVE</a>
+                </div>
+              </td>
+              <td>₹<%= total %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <div class="cart-footer">
+        <div class="grand-total">
+          Grand Total: <span>₹<%= grandTotal %></span>
+        </div>
+        <button class="add-more-btn" onclick="location.href='/customer/dashboard'">
+          Add More Products
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="side-box">
+        <h4>APPLY A PROMOTIONAL CODE</h4>
+        <div class="coupon-input">
+          <input type="text" placeholder="Enter discount code">
+          <button>APPLY</button>
+        </div>
+      </div>
+
+      <div class="side-box">
+        <h3>Summary</h3>
+        <div class="summary-row">
+          <span>Product Amount</span>
+          <span>₹<%= grandTotal %></span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span>₹49</span>
+        </div>
+        <hr>
+        <div class="summary-row summary-total" data-grandtotal="<%= grandTotal %>">
+  <span>Grand Total</span>
+  <span>₹<%= grandTotal + 49 %></span>
+</div>
+
+       <button class="checkout-btn" id="checkoutBtn">CHECKOUT</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<% } %>
+
+
+<div class="toast" id="toast">
+  Product added to cart  <a href="/customer/cart">View Cart</a>
+</div>
+
+<script>
+function showToast() {
+  const t = document.getElementById("toast");
+  t.style.display = "block";
+  setTimeout(() => { t.style.display = "none"; }, 3000);
+}
+
+document.querySelectorAll(".add-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const productId = btn.dataset.id;
+
+    fetch("/customer/cart/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const cartCountEl = document.querySelector(".cart-btn span");
+        cartCountEl.textContent = parseInt(cartCountEl.textContent || 0) + 1;
+        showToast();
+      }
+    });
+  });
+});
+
+document.querySelectorAll(".qty-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    fetch("/customer/cart/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        productId: btn.dataset.id,
+        action: btn.classList.contains("plus") ? "plus" : "minus"
+      })
+    }).then(() => location.reload());
+  });
+});
+
+
+const couponBtn = document.querySelector(".coupon-input button");
+const couponInput = document.querySelector(".coupon-input input");
+const summaryTotalEl = document.querySelector(".summary-row.summary-total");
+
+couponBtn.addEventListener("click", () => {
+  const code = couponInput.value.trim();
+  if (!code) return alert("Enter coupon code");
+
+  const baseTotal = parseFloat(summaryTotalEl.dataset.grandtotal); // read base total
+  const shipping = 49;
+
+  fetch("/customer/cart/apply-coupon", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code }),
+  })
+  .then(res => res.json())
+  .then(data => {
+  if (data.success) {
+    let discount = 0;
+
+    if (data.coupon.type === "flat") {
+      discount = parseFloat(data.coupon.value);
+    } 
+    else if (data.coupon.type === "percentage") {
+      discount = baseTotal * parseFloat(data.coupon.value) / 100;
+    }
+
+    const finalAmount = baseTotal + shipping - discount;
+
+
+    summaryTotalEl.querySelector("span:last-child").textContent =
+      "₹" + finalAmount.toFixed(2);
+
+    summaryTotalEl.dataset.appliedCoupon = code;
+
+    alert(`Coupon applied! You saved ₹${discount.toFixed(2)}`);
+  } else {
+    alert(data.message);
+  }
+  })
+  .catch(err => console.error(err));
+});
+
+document.getElementById("checkoutBtn").addEventListener("click", () => {
+  const summaryTotalEl = document.querySelector(".summary-row.summary-total");
+  const appliedCoupon = summaryTotalEl.dataset.appliedCoupon || null;
+
+  fetch("/customer/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify({ couponCode: appliedCoupon })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("Order placed successfully! Order ID: " + data.orderId);
+      window.location.href = "/customer/orders"; // redirect to orders page
+    } else {
+      alert(data.message);
+    }
+  })
+  .catch(err => console.error(err));
+});
+
+
+</script>

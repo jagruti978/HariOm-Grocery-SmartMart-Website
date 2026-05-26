@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Admin Dashboard | HariOm SmartMart</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet">
+  
+
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  
+
+
+<div class="top-bar">
+
+  <div class="top-left">
+    <img src="../image/Logo.png" class="logo-img">
+    <div>
+      <div class="brand-name">HariOm <span>SmartMart</span></div>
+      <div class="brand-sub">Admin Dashboard</div>
+    </div>
+  </div>
+
+  <div class="top-center">
+    <a class="pill-btn" href="/admin/dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+    <a class="pill-btn" href="/admin/products"><i class="fa-solid fa-box"></i> Products</a>
+    <a class="pill-btn" href="/admin/categories"><i class="fa-solid fa-list"></i> Categories</a>
+     <a class="pill-btn" href="/admin/coupons">
+      <i class="fa-solid fa-ticket"></i> Coupons
+    </a>
+    <a class="pill-btn" href="/admin/order"><i class="fa-solid fa-receipt"></i> Orders</a>
+    <a class="pill-btn" href="/admin/wholesalers"><i class="fa-solid fa-truck"></i> Wholesalers</a>
+        <a class="pill-btn" href="/admin/chats"><i class="fa-solid fa-headset"></i>Chat</a>
+  </div>
+
+  <div class="top-right">
+
+  <div class="notification-wrapper">
+    <i class="fa-solid fa-bell notification-icon" onclick="toggleNotifications()"></i>
+    <span id="notificationCount" class="notification-badge">0</span>
+    <div id="notificationDropdown" class="notification-dropdown"></div>
+  </div>
+
+  <button class="login-btn" onclick="location.href='/'">
+    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+  </button>
+    </div>
+</div>
+
+
+
+<div class="container">
+
+  <h2 style="color: var(--green-main); margin-bottom: 20px;">
+    System Overview
+  </h2>
+
+  <div class="dashboard-grid">
+
+    <div class="dashboard-card">
+      <i class="fa-solid fa-users"></i>
+      <h3>Approved wholesalers offer</h3>
+      <p><%= approvedOffers %></p>
+    </div>
+
+    <div class="dashboard-card">
+      <i class="fa-solid fa-industry"></i>
+      <h3>Total Wholesalers</h3>
+     <p><%= totalWholesalers %></p>
+    </div>
+
+    <div class="dashboard-card">
+      <i class="fa-solid fa-tags"></i>
+      <h3>Total Categories</h3>
+<p><%= totalCategories %></p>
+    </div>
+
+    <div class="dashboard-card">
+      <i class="fa-solid fa-boxes-stacked"></i>
+      <h3>Total Products</h3>
+     <p><%= totalProducts %></p>
+    </div>
+
+    <div class="dashboard-card">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <h3>Total Orders</h3>
+     <p><%= totalOrders %></p>
+    </div>
+
+    <div class="dashboard-card">
+      <i class="fa-solid fa-ticket"></i>
+      <h3>Total Coupons</h3>
+<p><%= totalCoupons %></p>
+    </div>
+
+    <div class="dashboard-card">
+      <i class="fa-solid fa-credit-card"></i>
+      <h3>Transactions</h3>
+    <p><%= totalPayments %></p>
+    </div>
+
+    <div class="dashboard-card alert">
+      <i class="fa-solid fa-user-clock"></i>
+      <h3>Pending Wholesalers</h3>
+      <p><%= pendingWholesalers %></p>
+    </div>
+
+    <div class="dashboard-card danger">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <h3>Expired Products</h3>
+    <p><%= expiredProducts %></p>
+    </div>
+
+    <div class="dashboard-card sales">
+  <i class="fa-solid fa-calendar-day"></i>
+  <h3>Today's Sales</h3>
+ <p class="counter" data-target="<%= todaySales %>"><%= todaySales %></p>
+</div>
+
+<div class="dashboard-card sales">
+  <i class="fa-solid fa-calendar-week"></i>
+  <h3>Weekly Sales</h3>
+  <p>₹ <%= weekSales %></p>
+</div>
+
+<div class="dashboard-card sales">
+  <i class="fa-solid fa-calendar"></i>
+  <h3>Monthly Sales</h3>
+  <p>₹ <%= monthSales %></p>
+</div>
+
+<div class="dashboard-card sales">
+  <i class="fa-solid fa-calendar-days"></i>
+  <h3>Yearly Sales</h3>
+  <p>₹ <%= yearSales %></p>
+</div>
+
+
+
+  </div>
+
+  <h2 style="margin-top:40px;color:var(--green-main);">
+  Sales Trend 
+</h2>
+
+<div style="margin-bottom:15px;">
+  <select id="filterSelect" class="pill-btn">
+    <option value="7">Last 7 Days</option>
+    <option value="30">Last 30 Days</option>
+    <option value="365">Last 1 Year</option>
+  </select>
+</div>
+
+<div class="chart-container">
+  <canvas id="salesChart"></canvas>
+</div>
+
+
+</div>
+
+
+
+
+<footer class="site-footer">
+  <div class="footer-bottom">
+    © 2025 HariOm SmartMart | Admin Panel
+  </div>
+</footer>
+
+
+
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let salesChart;
+
+const ctx = document.getElementById('salesChart').getContext('2d');
+
+function createGradient(ctx) {
+  const gradient = ctx.createLinearGradient(0, 0, 0, 500);
+  gradient.addColorStop(0, "rgba(34,197,94,0.8)");
+  gradient.addColorStop(1, "rgba(34,197,94,0.05)");
+  return gradient;
+}
+
+// ✨ Glow Plugin
+const glowPlugin = {
+  id: 'glowEffect',
+  beforeDatasetDraw(chart, args) {
+    const { ctx } = chart;
+    ctx.save();
+    ctx.shadowColor = "rgba(34,197,94,0.6)";
+    ctx.shadowBlur = 15;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+  },
+  afterDatasetDraw(chart, args) {
+    chart.ctx.restore();
+  }
+};
+
+Chart.register(glowPlugin);
+
+
+function loadChart(days = 7) {
+
+  document.querySelector(".chart-container").classList.add("loading");
+
+  fetch(`/admin/chart-data?days=${days}`)
+    .then(res => res.json())
+    .then(data => {
+
+      const labels = data.map(item =>
+        new Date(item.day).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short"
+        })
+      );
+
+      const revenueData = data.map(item => item.revenue);
+      const profitData = data.map(item => item.profit);
+        const ordersData = data.map(item => item.orders);
+
+      if (salesChart) {
+        salesChart.destroy();
+      }
+
+      salesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+  {
+    type: 'bar',
+    label: 'Revenue',
+    data: revenueData,
+    backgroundColor: "rgba(59,130,246,0.7)", 
+    borderRadius: 8
+  },
+  {
+    type: 'line',
+    label: 'Profit',
+    data: profitData,
+    borderColor: "#16a34a", 
+    backgroundColor: "rgba(34,197,94,0.2)",
+    borderWidth: 4,
+    tension: 0.4,
+    fill: true,
+    pointRadius: 5,
+    pointBackgroundColor: "#ffffff",
+    pointBorderColor: "#16a34a",
+    pointBorderWidth: 2
+  },
+  {
+    type: 'bar',
+    label: 'Orders',
+    data: data.map(item => item.orders),
+    backgroundColor: "rgba(236,72,153,0.7)",
+    borderRadius: 8
+  }
+]
+
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: 2000,
+            easing: "easeOutQuart"
+          },
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              labels: {
+                font: { size: 14, weight: "bold" }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ": ₹ " +
+                         context.parsed.y.toLocaleString("en-IN");
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: value => "₹ " + value
+              }
+            }
+          }
+        }
+      });
+
+      document.querySelector(".chart-container").classList.remove("loading");
+    });
+}
+
+
+loadChart(7);
+
+
+document.getElementById("filterSelect").addEventListener("change", function() {
+  loadChart(this.value);
+});
+</script>
+<script>
+function toggleNotifications() {
+  document.getElementById("notificationDropdown").classList.toggle("show");
+}
+
+function loadNotifications() {
+  fetch("/admin/notifications")
+    .then(res => res.json())
+    .then(data => {
+      const dropdown = document.getElementById("notificationDropdown");
+      const count = document.getElementById("notificationCount");
+
+      dropdown.innerHTML = "";
+
+      if (data.length === 0) {
+        dropdown.innerHTML = "<p>No notifications</p>";
+        count.textContent = 0;
+        return;
+      }
+
+      count.textContent = data.length;
+
+      data.forEach(n => {
+        const div = document.createElement("div");
+        div.classList.add("notification-item");
+
+        div.innerHTML = `
+          <p>${n.message}</p>
+          <small>${new Date(n.created_at).toLocaleString()}</small>
+        `;
+
+        div.onclick = () => handleNotification(n);
+
+        dropdown.appendChild(div);
+      });
+    });
+}
+
+function handleNotification(n) {
+
+  fetch(`/admin/notifications/read/${n.id}`, {
+    method: "POST"
+  });
+
+  
+  if (n.type === "order") {
+    window.location.href = "/admin/order";
+  }
+
+  else if (n.type === "wholesaler") {
+    window.location.href = "/admin/wholesalers";
+  }
+
+  else if (n.type === "expired") {
+    window.location.href = "/admin/products";
+  }
+
+  else if (n.type === "chat") {
+    window.location.href = `/admin/chat/${n.related_id}`;
+  }
+
+    
+  else if (n.type === "supply" && n.related_id) {
+    window.location.href = "/admin/wholesalers";
+  }
+}
+
+loadNotifications();
+setInterval(loadNotifications, 5000);
+</script>
+
+
+
+
+</html>
+

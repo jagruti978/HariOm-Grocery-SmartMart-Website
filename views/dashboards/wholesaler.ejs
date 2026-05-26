@@ -1,0 +1,303 @@
+<%- include("../partials/head", { title: "Wholesaler Dashboard" }) %>
+
+
+<div class="top-bar">
+  <div class="top-left">
+    <img src="/image/Logo.png" class="logo-img">
+    <div>
+      <div class="brand-name">HariOm <span>SmartMart</span></div>
+      <div class="brand-sub">Wholesaler Panel</div>
+    </div>
+  </div>
+
+  <div class="top-center">
+    <a class="pill-btn active" href="/wholesaler/dashboard">
+      <i class="fa-solid fa-truck"></i> Dashboard
+    </a>
+  </div>
+
+  <div class="top-right">
+    <button class="login-btn" onclick="location.href='/wholesaler/logout'">
+  <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+</button>
+  </div>
+</div>
+
+<div class="container">
+<% if (status === "rejected") { %>
+
+  <div class="error-msg">
+    <h3>Verification Rejected</h3>
+    <p><strong>Reason:</strong> <%= reason %></p>
+
+    <form action="/wholesaler/resubmit" method="POST" enctype="multipart/form-data">
+      <input type="file" name="business_docs" required>
+      <button class="pill-btn">Re-submit Documents</button>
+    </form>
+  </div>
+
+<% } else if (status === "pending") { %>
+
+  <div class="error-msg">
+    Your verification is under review.
+  </div>
+
+<% } else { %>
+
+<% if(status === "pending") { %>
+  <div class="error-msg">
+    Your verification is under review.
+  </div>
+<% return; } %>
+
+   <% if (error) { %>
+    <div class="error-msg" id="error-msg"><%= error %></div>
+  <% } %>
+
+  <% if (success) { %>
+    <div class="success-msg" id="success-msg"><%= success %></div>
+  <% } %>
+
+  <h2>Upload Supply Offer</h2>
+
+  <form class="card" method="POST" action="/wholesaler/offer/add" enctype="multipart/form-data">
+    <input type="text" name="product_name" placeholder="Product Name" required>
+    <input type="number" name="price" placeholder="Price" required>
+    <input type="number" name="moq" placeholder="Minimum Order Qty" required>
+    <input type="number" name="stock_available" placeholder="Stock Available" required>
+    <input type="file" name="catalog_file" accept=".pdf,image/*">
+    <button class="pill-btn">Submit Offer</button>
+  </form>
+
+  <h3 style="margin-top:40px;">My Supply Offers</h3>
+
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>MOQ</th>
+        <th>Stock</th>
+        <th>Catalog</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (offers.length === 0) { %>
+        <tr>
+          <td colspan="7" style="text-align:center;padding:20px;">
+            No offers uploaded yet
+          </td>
+        </tr>
+      <% } %>
+
+      <% offers.forEach(o => { %>
+        <tr>
+          <td><%= o.product_name %></td>
+          <td>₹ <%= o.price %></td>
+          <td><%= o.moq %></td>
+          <td><%= o.stock_available %></td>
+          <td>
+            <% if (o.catalog_file) { %>
+              <a href="/uploads/<%= o.catalog_file %>" target="_blank">View</a>
+            <% } else { %> — <% } %>
+          </td>
+         <td>
+  <% if (o.status === 'approved') { %>
+    <span class="status-pill success">Approved</span>
+
+  <% } else if (o.status === 'published') { %>
+    <span class="status-pill success">Added To Shop</span>
+
+  <% } else if (o.status === 'rejected') { %>
+    <span class="status-pill danger">Rejected</span>
+
+  <% } else { %>
+    <span class="status-pill warning">Pending</span>
+  <% } %>
+</td>
+  <td>
+
+  <% if (o.status === 'pending') { %>
+
+    <form action="/wholesaler/offer/delete/<%= o.offer_id %>" 
+          method="POST" 
+          style="display:inline;">
+      <button type="submit"
+              onclick="return confirm('Delete this offer?')"
+              style="background:none;border:none;color:#3f5c0e;font-weight:600;cursor:pointer;">
+        Delete
+      </button>
+    </form>
+
+  <% } else if (o.status === 'rejected') { %>
+
+    <form action="/wholesaler/offer/delete/<%= o.offer_id %>" 
+          method="POST" 
+          style="display:inline;">
+      <button type="submit"
+              onclick="return confirm('Delete this rejected offer?')"
+              style="background:none;border:none;color:#c0392b;font-weight:600;cursor:pointer;">
+        Delete
+      </button>
+    </form>
+
+    |
+
+  <button type="button"
+        onclick="openEditModal(
+          '<%= o.offer_id %>',
+          '<%= o.product_name %>',
+          '<%= o.price %>',
+          '<%= o.moq %>',
+          '<%= o.stock_available %>'
+        )"
+        style="background:none;border:none;color:#3f5c0e;font-weight:600;cursor:pointer;">
+  Resubmit
+</button>
+
+  <% } else { %>
+
+    —
+
+  <% } %>
+
+</td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% } %>
+
+
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditModal()">&times;</span>
+
+    <h3>Edit & Resubmit Offer</h3>
+
+    <form id="editForm" method="POST">
+      <input type="text" name="product_name" id="edit_product_name" required>
+      <input type="number" name="price" id="edit_price" required>
+      <input type="number" name="moq" id="edit_moq" required>
+      <input type="number" name="stock_available" id="edit_stock" required>
+
+      <button class="pill-btn" style="margin-top:15px;">
+        Update & Resubmit
+      </button>
+    </form>
+  </div>
+</div>
+</div>
+
+<style>
+
+.container { max-width:1200px; margin:auto; padding:30px; }
+h2,h3 { margin-bottom:16px; color:#2c2c2c; }
+
+
+.success-msg { 
+  background:#e8f8f1; color:#27ae60; padding:12px 20px; 
+  border-radius:10px; margin-bottom:20px; font-weight:600; 
+  transition: all 0.5s ease;
+}
+
+.card {
+  background:#fff; border-radius:16px; padding:24px; 
+  box-shadow:0 10px 30px rgba(0,0,0,0.08); display:grid; 
+  grid-template-columns: repeat(5, 1fr); gap:14px; align-items:center;
+}
+.card input, .card input[type=file] {
+  padding:10px 12px; border-radius:10px; border:1px solid #d0d0d0; font-size:14px; width:100%;
+}
+.card input:focus { outline:none; border-color:#f39c12; }
+.card button {
+  grid-column:span 5; margin-top:10px; padding:12px; border-radius:999px; border:none;
+  background:#3f5c0e; color:#fff; font-weight:600; cursor:pointer; transition:0.3s;
+}
+.card button:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+
+
+.admin-table { width:100%; border-collapse:collapse; background:#fff; border-radius:16px; overflow:hidden; margin-top:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08);}
+.admin-table th, .admin-table td { padding:14px 16px; font-size:14px; text-align:left; }
+.admin-table th { font-weight:600; background: #f7cece; }
+.admin-table tr { border-bottom:1px solid #eee; }
+.admin-table tr:last-child { border-bottom:none; }
+.admin-table tr:hover { background:#fafafa; }
+.status-pill { padding:6px 12px; border-radius:999px; font-weight:600; display:inline-block; font-size:12px; }
+.status-pill.success { background:#e8f8f1; color:#27ae60; }
+.status-pill.danger { background:#fdecea; color:#c0392b; }
+.status-pill.warning { background:#daae71; color:#3f5c0e; }
+.admin-table a { color:#3f5c0e; text-decoration:none; font-weight:600; }
+.admin-table a:hover {  text-decoration:underline; }
+
+.modal {
+  display:none;
+  position:fixed;
+  z-index:1000;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(3px);
+}
+
+.modal-content {
+  background:#fff;
+  width:400px;
+  margin:8% auto;
+  padding:25px;
+  border-radius:18px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.2);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.modal-content input {
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+.close {
+  float:right;
+  font-size:22px;
+  cursor:pointer;
+}
+
+@media (max-width:900px) {
+  .card { grid-template-columns: repeat(2,1fr); }
+  .card button { grid-column:span 2; }
+}
+</style>
+
+<script>
+
+setTimeout(() => {
+  const successMsg = document.getElementById("success-msg");
+  const errorMsg = document.getElementById("error-msg");
+
+  if(successMsg) successMsg.style.display = "none";
+  if(errorMsg) errorMsg.style.display = "none";
+}, 4000);
+
+function openEditModal(id, name, price, moq, stock) {
+  document.getElementById("editModal").style.display = "block";
+
+  document.getElementById("edit_product_name").value = name;
+  document.getElementById("edit_price").value = price;
+  document.getElementById("edit_moq").value = moq;
+  document.getElementById("edit_stock").value = stock;
+
+  document.getElementById("editForm").action =
+    "/wholesaler/offer/resubmit/" + id;
+}
+
+function closeEditModal() {
+  document.getElementById("editModal").style.display = "none";
+}
+
+</script>

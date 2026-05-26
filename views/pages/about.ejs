@@ -1,0 +1,73 @@
+<%- include("../partials/head", { title: "About Us | HariOm SmartMart" }) %>
+<%- include("../partials/header") %>
+<style>
+
+
+body {
+  margin: 0;
+  font-family: 'Comfortaa', sans-serif;
+  min-height: 100vh;
+  background-color: #efe4d6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("../image/pattern.png"); 
+  background-repeat: repeat;
+  background-size: 220px;
+  opacity: 0.12;  
+  z-index: 0;
+}
+
+
+.top-bar,
+.container {
+  position: relative;
+  z-index: 5;
+}
+</style>
+<main class="container">
+  <section class="about-layout">
+
+   
+    <div class="about-card">
+      <h1 class="about-title">About HariOm SmartMart</h1>
+
+      <p class="about-text">
+        <strong>HariOm SmartMart</strong> was created with a simple belief —
+        grocery shopping should be easy, trustworthy, and stress-free.
+      </p>
+
+      <p class="about-text">
+        We provide carefully selected everyday essentials including packaged foods,
+        household items, personal care, baby care products, pulses, and grains
+        delivered with care and honesty.
+      </p>
+
+      <div class="about-highlight">
+        <h3>
+          <i class="fa-solid fa-spa"></i>
+          Our Aim & Motto
+          <i class="fa-solid fa-spa"></i>
+        </h3>
+
+        <p>
+          To serve wholesome groceries with honesty, care, and responsibility —
+          bringing comfort, health, and trust to every home.
+        </p>
+      </div>
+    </div>
+
+    <div class="about-image">
+      <img src="/image/aboutimg.jpg" alt="HariOm SmartMart Store">
+    </div>
+
+  </section>
+</main>
+
+<%- include("../partials/footer") %>
